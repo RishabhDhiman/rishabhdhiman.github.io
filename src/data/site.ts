@@ -63,7 +63,7 @@ export const site = {
 // headline, Instagram bio and talks so the brand is consistent everywhere.
 export const brand = {
   statement: 'I build the apps India shops and pays with.',
-  intro: `Senior Android Engineer at Nykaa, working on the Nykaa Fashion, Nykaa Beauty and Nike India apps. I was part of the team that built the Nike India app from scratch in four months, and before that spent two years on Paytm's POS payments app. Here I share what I learn shipping Android at India scale.`,
+  intro: `Senior Android Engineer at Nykaa, working on the Nykaa Fashion, Nykaa Beauty and Nike India apps. I was part of the core team that built the Nike India app from scratch in four months, and before that spent two years on Paytm's POS payments app. Here I share what I learn shipping Android at India scale.`,
   builtFor: ['Nike', 'Nykaa', 'Paytm', 'Jio'],
   stats: [
     { value: `${yearsExperience}+ yrs`, label: 'shipping Android apps' },
@@ -81,15 +81,16 @@ export const brand = {
 
 // Told as a story, not a CV. Facts all come from the resume.
 export const about = [
-  'I’m from Yamunanagar in Haryana. I studied computer applications at Kurukshetra University and took my first Android job in 2019 as an associate developer at Seasia Infotech. My first win there set the tone: moving screens to dynamic layouts cut the time to change the UI by 90%.',
-  'Since then I have built apps for Jio and Surfboard, spent two years at Paytm making its POS payments app faster, more secure and ready for metro cards, and was named a Paytm Rising Star in 2023.',
-  `Today I'm an SDE-2 at Nykaa, working on the Nike India, Nykaa Fashion and Nykaa Beauty apps and the payments SDK they all share. I care about work that moves a number: cash burn, conversion, battery life, time to ship.`,
+  'I’m from Yamunanagar in Haryana. I studied computer applications at Kurukshetra University and took my first Android job in 2019 as an associate developer at Seasia Infotech in Mohali. My first win there set the tone: moving screens to dynamic layouts cut the time to change the UI by 90%.',
+  'Since then I have built apps for Jio and Surfboard in Mohali, spent two years at Paytm in Chandigarh making its POS payments app faster, more secure and ready for metro and bus cards, and was named a Paytm Rising Star in 2023.',
+  `Today I'm an SDE-2 at Nykaa in Gurugram, working on the Nike India, Nykaa Fashion and Nykaa Beauty apps and the payments SDK they all share. I care about work that moves a number: cash burn, conversion, battery life, time to ship.`,
 ];
 
 export type Experience = {
   company: string;
   url?: string;
   role: string;
+  city?: string;
   start: string; // "2022-04"
   end?: string; // omit = present
   points: string[];
@@ -100,9 +101,10 @@ export const experience: Experience[] = [
     company: 'Nykaa',
     url: 'https://www.nykaa.com',
     role: 'SDE-2',
+    city: 'Gurugram',
     start: '2024-08',
     points: [
-      'Part of the team that built the Nike India Android app from scratch in a record four months.',
+      'Part of the core team that took the Nike India Android app from idea to MVP in a record four months.',
       'Work on the Payments SDK used by every Nykaa and Nike India app.',
       'Revamped the COD widget, cutting cash burn by 80%.',
       'Revamped Rate & Review (+7% rating submissions) and Order Confirmation (+7% cross-selling).',
@@ -113,19 +115,23 @@ export const experience: Experience[] = [
     company: 'Paytm',
     url: 'https://paytm.com',
     role: 'Senior Software Engineer',
+    city: 'Chandigarh',
     start: '2022-05',
     end: '2024-07',
     points: [
-      'Implemented ECR for NCMC transactions, bringing four metro agencies onto the Paytm payments app.',
+      'Single-handedly implemented ECR for NCMC transactions, bringing four metro agencies onto the Paytm payments app, and built an ECR SDK for Windows devices.',
+      'Helped build a bus transit app that lets conductors collect fares cashlessly on Paytm POS machines, with NCMC RuPay cards working as metro and bus passes.',
+      'Implemented a CDC ACM driver for Android-to-Android serial communication.',
       'Migrated the POS encryption protocol from 2BDK to 3BDK with zero issues.',
       'Optimised the system screensaver, improving device battery life by 10%.',
       'Built a GPT-based tool that cut POS transaction analysis from two days to seconds.',
-      'Modularised the payments app, removing one approval step before each release.',
+      'Modularised the payments app with a separate database for offline and transit payments, removing one approval step before each release.',
     ],
   },
   {
     company: 'Mobile Programming LLC',
     role: 'Software Engineer',
+    city: 'Mohali',
     start: '2019-12',
     end: '2022-05',
     points: [
@@ -136,6 +142,7 @@ export const experience: Experience[] = [
   {
     company: 'Seasia Infotech',
     role: 'Associate Android Developer',
+    city: 'Mohali',
     start: '2019-05',
     end: '2019-12',
     points: [
@@ -162,16 +169,16 @@ export const projects: Project[] = [
   {
     slug: 'nike-india-android-app',
     name: 'Nike India Android app',
-    summary: 'Part of the Nykaa team that built the Nike India shopping app for Android from scratch in four months, on Nykaa’s commerce and payments stack.',
+    summary: 'Part of the core Nykaa team that built the Nike India shopping app for Android from scratch in four months, on Nykaa’s commerce and payments stack.',
     year: '2025–present',
-    role: 'Android engineer on the app team (SDE-2)',
+    role: 'Android engineer on the core app team (SDE-2)',
     company: 'Nykaa',
     stack: ['Android', 'Kotlin', 'Java', 'MVVM', 'Payments SDK'],
     links: [],
     problem:
       'Nike India needed its own Android app for placing orders, launched on a tight timeline and running on the same commerce and payments platform as Nykaa’s apps.',
     approach: [
-      'Worked as an Android engineer in the team that built the app from scratch.',
+      'Worked as an Android engineer in the core team that took the app from idea to MVP.',
       'Integrated Nykaa’s shared Payments SDK, which I also work on, so checkout runs on the same platform as every other Nykaa app.',
     ],
     outcome: ['The team shipped from zero to production in a record four months.', 'Live for customers placing orders on Nike India.'],
@@ -212,17 +219,19 @@ export const projects: Project[] = [
     problem:
       'A payments app running on dedicated POS hardware has to be secure, certifiable and frugal with battery, while new payment types such as the National Common Mobility Card keep arriving.',
     approach: [
-      'Implemented ECR (electronic cash register) integration for NCMC transactions.',
+      'Single-handedly implemented ECR (electronic cash register) integration for NCMC transactions, so metro agencies can send card operations straight to the POS machine, and built an ECR SDK for Windows devices.',
+      'Helped build a bus transit app that lets conductors collect fares cashlessly on Paytm POS machines.',
+      'Implemented a CDC ACM driver for Android-to-Android serial communication.',
       'Migrated the encryption protocol from 2BDK to 3BDK without a single production issue.',
       'Reworked the system screensaver to use less power on the device.',
-      'Modularised the app so modules could be released with one fewer approval step.',
-      'Built a GPT-based tool for analysing POS transactions.',
+      'Modularised the app with a dedicated database for offline and transit payments, so modules could be released with one fewer approval step.',
+      'Built a GPT-based tool that reads the events from each POS transaction to find the root cause of failures.',
     ],
     outcome: [
       'Four metro agencies adopted the Paytm payments app for taking payments.',
       '10% better device battery life.',
       'Transaction analysis cut from two days to seconds.',
-      'Named Rising Star at Paytm in 2023.',
+      'Named Rising Star at Paytm in 2023 for shipping ECR for NCMC and the encryption migration at the same time.',
     ],
   },
   {

@@ -343,6 +343,22 @@ p {
   padding-top: 0.25rem;
 }
 
+.job .city {
+  display: block;
+  font-family: var(--font);
+  color: var(--ink-2);
+}
+
+@media (max-width: 39.99rem) {
+  .job .city {
+    display: inline;
+  }
+  .job .city::before {
+    content: ' · ';
+    color: var(--ink-3);
+  }
+}
+
 .job h3 {
   font-size: var(--step-1);
   letter-spacing: -0.015em;

@@ -108,6 +108,7 @@ const linkedin = brand.follow.find((f) => f.label === 'LinkedIn');
               {isIsoMonth(job.start) ? <time datetime={job.start}>{monthYear(job.start)}</time> : job.start}
               {' – '}
               {job.end ? (isIsoMonth(job.end) ? <time datetime={job.end}>{monthYear(job.end)}</time> : job.end) : 'Present'}
+              {job.city && <span class="city">{job.city}</span>}
             </p>
             <div>
               <h3>
