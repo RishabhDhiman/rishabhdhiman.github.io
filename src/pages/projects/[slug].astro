@@ -1,0 +1,68 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import { projects, site, type Project } from '../../data/site';
+import { projectGraph } from '../../data/schema';
+
+export const getStaticPaths = (() =>
+  projects.map((p, i) => ({
+    params: { slug: p.slug },
+    props: { project: p, next: projects[(i + 1) % projects.length] },
+  }))) satisfies GetStaticPaths;
+
+const { project: p, next } = Astro.props as { project: Project; next: Project };
+const path = `/projects/${p.slug}/`;
+---
+
+<Base
+  title={`${p.name}: case study`}
+  description={`${p.summary} Case study by ${site.name}, ${site.jobTitle}.`}
+  type="article"
+  jsonLd={projectGraph(p, path)}
+>
+  <article class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/#work">Work</a></li>
+        <li aria-current="page">{p.name}</li>
+      </ol>
+    </nav>
+
+    <header class="case-hero">
+      <h1>{p.name}</h1>
+      <p class="lede" style="margin-top: 1rem;">{p.summary}</p>
+      <dl class="facts">
+        {p.company && <div><dt>Company</dt><dd>{p.company}</dd></div>}
+        <div><dt>Role</dt><dd>{p.role}</dd></div>
+        <div><dt>Year</dt><dd>{p.year}</dd></div>
+        <div><dt>Stack</dt><dd>{p.stack.join(', ')}</dd></div>
+        {p.links.length > 0 && (
+          <div>
+            <dt>Links</dt>
+            <dd>{p.links.map((l, i) => (<>{i > 0 && ', '}<a href={l.url} rel="noopener">{l.label}</a></>))}</dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    <div class="prose">
+      <h2>The problem</h2>
+      <p class="muted">{p.problem}</p>
+
+      <h2>What I did</h2>
+      <ul>{p.approach.map((a) => <li>{a}</li>)}</ul>
+
+      <h2>Outcome</h2>
+      <ul>{p.outcome.map((o) => <li>{o}</li>)}</ul>
+    </div>
+
+    {next.slug !== p.slug && (
+      <a class="card next" href={`/projects/${next.slug}/`}>
+        <p class="eyebrow" style="margin-bottom: .5rem;">Next case study</p>
+        <h3>{next.name}<span class="arrow" aria-hidden="true">→</span></h3>
+      </a>
+    )}
+    <div style="height: 4rem;"></div>
+  </article>
+</Base>

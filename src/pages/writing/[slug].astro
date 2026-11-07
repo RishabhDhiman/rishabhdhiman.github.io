@@ -1,0 +1,112 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import FollowCards from '../../components/FollowCards.astro';
+import { site, brand } from '../../data/site';
+import { personId, websiteId, person } from '../../data/schema';
+import { getPosts, postPath, postImage, readingMinutes, fmtDate, type Post } from '../../lib/posts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props as { post: Post };
+const { Content } = await render(post);
+const url = new URL(postPath(post), site.url).href;
+const image = postImage(post);
+const minutes = readingMinutes(post.body);
+const { title, description, date, updated, tags } = post.data;
+
+const share = [
+  { label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+  { label: 'X', href: `https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}` },
+  { label: 'WhatsApp', href: `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}` },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BlogPosting',
+      '@id': `${url}#post`,
+      headline: title,
+      description,
+      url,
+      mainEntityOfPage: url,
+      image: new URL(image, site.url).href,
+      datePublished: date.toISOString(),
+      dateModified: (updated ?? date).toISOString(),
+      author: { '@id': personId },
+      publisher: { '@id': personId },
+      keywords: tags.join(', '),
+      wordCount: post.body?.split(/\s+/).filter(Boolean).length,
+      inLanguage: 'en-IN',
+      isPartOf: { '@id': `${site.url}/writing/#blog` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+        { '@type': 'ListItem', position: 2, name: 'Writing', item: `${site.url}/writing/` },
+        { '@type': 'ListItem', position: 3, name: title, item: url },
+      ],
+    },
+    { ...person(), '@id': personId },
+    { '@type': 'WebSite', '@id': websiteId, url: `${site.url}/`, name: site.name },
+  ],
+};
+---
+
+<Base
+  title={title}
+  description={description}
+  type="article"
+  image={image}
+  imageAlt={title}
+  published={date.toISOString()}
+  noindex={post.data.draft}
+  jsonLd={jsonLd}
+>
+  <article class="wrap post">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/writing/">Writing</a></li>
+      </ol>
+    </nav>
+
+    <header class="case-hero">
+      {post.data.draft && <p class="draft-banner">Draft: only visible in dev. Set <code>draft: false</code> to publish.</p>}
+      <h1>{title}</h1>
+      <p class="post-meta" style="margin-top: 1rem;">
+        By <a href="/" rel="author">{site.name}</a> ·
+        <time datetime={date.toISOString()}>{fmtDate(date)}</time> · {minutes} min read
+      </p>
+    </header>
+
+    <div class="prose post-body">
+      <Content />
+    </div>
+
+    <aside class="share" aria-label="Share this post">
+      <span>Found this useful? Share it:</span>
+      <ul>{share.map((s) => <li><a href={s.href} target="_blank" rel="noopener">{s.label}</a></li>)}</ul>
+    </aside>
+
+    <aside class="author-box" aria-label="About the author">
+      <img class="avatar" src={site.avatar} alt={`Photo of ${site.name}`} width="56" height="56" loading="lazy" decoding="async" />
+      <div>
+        <p class="author-name">Written by {site.name}</p>
+        <p class="muted">{brand.intro}</p>
+      </div>
+    </aside>
+
+    <section class="post-follow" aria-label="Follow">
+      <h2>Get the next one</h2>
+      <FollowCards />
+    </section>
+    <div style="height: 4rem;"></div>
+  </article>
+</Base>

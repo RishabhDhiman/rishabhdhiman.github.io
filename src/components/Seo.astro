@@ -1,0 +1,88 @@
+---
+// Every <head> tag that matters for search and social previews lives here, so
+// no page can forget its canonical, description or structured data.
+import { site } from '../data/site';
+
+interface Props {
+  title?: string; // page-specific part; omitted on home
+  description?: string;
+  image?: string; // absolute or root-relative, 1200x630
+  imageAlt?: string;
+  type?: 'profile' | 'article' | 'website';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  published?: string;
+}
+
+const {
+  title,
+  description = site.description,
+  image = '/og.png',
+  imageAlt = `${site.name}, ${site.jobTitle}`,
+  type = 'website',
+  noindex = false,
+  jsonLd,
+  published,
+} = Astro.props;
+
+// Home leads with the name (what people search); inner pages lead with their
+// own topic and keep the name as the brand suffix.
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} · ${site.jobTitle}`;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const imageUrl = new URL(image, site.url).href;
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta
+  name="robots"
+  content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+/>
+<meta name="author" content={site.name} />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Open Graph (LinkedIn, WhatsApp, Facebook, Slack, Discord) -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content={site.locale} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+{
+  type === 'profile' && (
+    <>
+      <meta property="profile:first_name" content={site.givenName} />
+      <meta property="profile:last_name" content={site.familyName} />
+    </>
+  )
+}
+{type === 'article' && published && <meta property="article:published_time" content={published} />}
+
+<!-- X / Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+<!-- Identity: rel="me" links verify that these profiles belong to this site -->
+{site.profiles.map((p) => <link rel="me" href={p.url} />)}
+
+<!-- Icons & app chrome -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#111311" media="(prefers-color-scheme: dark)" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+{ld.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}

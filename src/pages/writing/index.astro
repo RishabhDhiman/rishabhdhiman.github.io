@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { site } from '../../data/site';
+import { personId, websiteId } from '../../data/schema';
+import { getPosts, postPath } from '../../lib/posts';
+
+const posts = await getPosts();
+const url = `${site.url}/writing/`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  '@id': `${url}#blog`,
+  url,
+  name: `${site.name}: writing`,
+  author: { '@id': personId },
+  isPartOf: { '@id': websiteId },
+  inLanguage: 'en-IN',
+  blogPost: posts.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.data.title,
+    url: new URL(postPath(p), site.url).href,
+    datePublished: p.data.date.toISOString(),
+  })),
+};
+---
+
+<Base
+  title="Writing"
+  description={`Notes on Android engineering, payments and building a tech career in India, by ${site.name}.`}
+  jsonLd={jsonLd}
+  noindex={posts.length === 0}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Writing</p>
+    <h1 class="page-title">Notes from shipping Android at India scale</h1>
+    <p class="lede">
+      What I learn building e-commerce and payments apps, written for engineers a few steps behind me. New posts land in
+      the <a href="/rss.xml">RSS feed</a> too.
+    </p>
+  </section>
+  <section class="wrap" style="padding-bottom: 5rem;">
+    {posts.length ? <PostList posts={posts} /> : <p class="muted">First post coming soon.</p>}
+  </section>
+</Base>

@@ -1,0 +1,57 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import { site } from '../data/site';
+import { getPosts } from '../lib/posts';
+
+type Props = Parameters<typeof Seo>[0];
+const props = Astro.props;
+const year = new Date().getFullYear();
+const isHome = Astro.url.pathname === '/';
+const hasWriting = (await getPosts()).length > 0;
+const nav = [
+  { href: '/#about', label: 'About' },
+  ...(hasWriting ? [{ href: '/writing/', label: 'Writing' }] : []),
+  { href: '/#work', label: 'Work' },
+  { href: '/#contact', label: 'Connect' },
+];
+---
+
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <Seo {...props} />
+    {hasWriting && <link rel="alternate" type="application/rss+xml" title={`${site.name}: writing`} href="/rss.xml" />}
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a href="/" class="brand" aria-current={isHome ? 'page' : undefined}>
+          <span class="brand-mark" aria-hidden="true">RD</span>
+          <span class="brand-name">{site.name}</span>
+        </a>
+        <nav aria-label="Primary">
+          <ul>
+            {nav.map((n) => (<li><a href={n.href}>{n.label}</a></li>))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p>© {year} {site.name} · {site.jobTitle}</p>
+        <ul class="footer-links">
+          {site.profiles.map((p) => (<li><a href={p.url} rel="me noopener">{p.label}</a></li>))}
+          {hasWriting && <li><a href="/rss.xml">RSS</a></li>}
+        </ul>
+      </div>
+    </footer>
+  </body>
+</html>

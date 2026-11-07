@@ -1,0 +1,178 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import FollowCards from '../components/FollowCards.astro';
+import { site, brand, about, experience, projects, skills, awards, education } from '../data/site';
+import { homeGraph } from '../data/schema';
+import { monthYear, isIsoMonth } from '../lib/format';
+import { getPosts } from '../lib/posts';
+
+const posts = (await getPosts()).slice(0, 3);
+const linkedin = brand.follow.find((f) => f.label === 'LinkedIn');
+---
+
+<Base type="profile" jsonLd={homeGraph()}>
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <h1 id="hero-title" class="hero-title">
+      <span class="hero-id">
+        {
+          site.avatar ? (
+            <img class="avatar avatar-hero" src={site.avatar} alt="" width="80" height="80" loading="eager" fetchpriority="high" decoding="async" />
+          ) : (
+            <span class="avatar avatar-mono" aria-hidden="true">RD</span>
+          )
+        }
+        <span class="hero-name">{site.name}</span>
+      </span>
+      <span class="hero-statement">{brand.statement}</span>
+    </h1>
+    <p class="lede">{brand.intro}</p>
+    <div class="hero-meta">
+      {linkedin && <a class="btn" href={linkedin.url} rel="me noopener" target="_blank">Follow on LinkedIn</a>}
+      {posts.length > 0 && <a class="btn ghost" href="/writing/">Read my writing</a>}
+      <a class="btn ghost" href={site.resumeUrl} rel="noopener">Resume</a>
+    </div>
+
+    <div class="built-for">
+      <span class="built-label">Apps I've helped build</span>
+      <ul>{brand.builtFor.map((b) => <li>{b}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="stats-band" aria-label="Highlights">
+    <ul class="wrap stats">
+      {brand.stats.map((s) => (
+        <li>
+          <strong>{s.value}</strong>
+          <span>{s.label}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="about" class="section" aria-labelledby="about-title">
+    <div class="wrap">
+      <p class="eyebrow">01 · My story</p>
+      <h2 id="about-title">From Kurukshetra to Nike India</h2>
+      {about.map((para) => <p class="story">{para}</p>)}
+    </div>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section id="writing" class="section" aria-labelledby="writing-title">
+        <div class="wrap">
+          <p class="eyebrow">02 · Writing</p>
+          <div class="section-head">
+            <h2 id="writing-title">Latest notes</h2>
+            <a href="/writing/" class="see-all">All posts →</a>
+          </div>
+          <PostList posts={posts} />
+        </div>
+      </section>
+    )
+  }
+
+  <section id="work" class="section" aria-labelledby="work-title">
+    <div class="wrap">
+      <p class="eyebrow">03 · Selected work</p>
+      <h2 id="work-title">Case studies</h2>
+      <ul class="cards">
+        {projects.map((p) => (
+          <li>
+            <a class="card" href={`/projects/${p.slug}/`}>
+              {p.company && <p class="card-kicker">{p.company} · {p.year}</p>}
+              <h3>
+                {p.name}
+                <span class="arrow" aria-hidden="true">→</span>
+              </h3>
+              <p>{p.summary}</p>
+              <ul class="tags" aria-label="Tech stack">
+                {p.stack.slice(0, 5).map((s) => <li>{s}</li>)}
+              </ul>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section id="experience" class="section" aria-labelledby="exp-title">
+    <div class="wrap">
+      <p class="eyebrow">04 · Journey</p>
+      <h2 id="exp-title">Where I've worked</h2>
+      <ol class="timeline">
+        {experience.map((job) => (
+          <li class="job">
+            <p class="dates">
+              {isIsoMonth(job.start) ? <time datetime={job.start}>{monthYear(job.start)}</time> : job.start}
+              {' – '}
+              {job.end ? (isIsoMonth(job.end) ? <time datetime={job.end}>{monthYear(job.end)}</time> : job.end) : 'Present'}
+            </p>
+            <div>
+              <h3>
+                {job.role} <span class="at">at {job.url ? <a href={job.url} rel="noopener">{job.company}</a> : job.company}</span>
+              </h3>
+              <ul>
+                {job.points.map((pt) => <li>{pt}</li>)}
+              </ul>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="skills" class="section" aria-labelledby="skills-title">
+    <div class="wrap">
+      <p class="eyebrow">05 · Toolkit</p>
+      <h2 id="skills-title">What I work with</h2>
+      <dl class="skills">
+        {skills.map((g) => (
+          <div>
+            <dt>{g.group}</dt>
+            <dd>
+              <ul class="tags">{g.items.map((i) => <li>{i}</li>)}</ul>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section id="recognition" class="section" aria-labelledby="rec-title">
+    <div class="wrap">
+      <p class="eyebrow">06 · Recognition & education</p>
+      <h2 id="rec-title">Awards and education</h2>
+      <ol class="timeline">
+        {awards.map((a) => (
+          <li class="job">
+            <p class="dates">{a.year}</p>
+            <div><h3>{a.title} <span class="at">· {a.org}</span></h3></div>
+          </li>
+        ))}
+        {education.map((e) => (
+          <li class="job">
+            <p class="dates">{e.years}</p>
+            <div><h3>{e.degree} <span class="at">· {e.school}</span></h3></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="contact" class="section contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <p class="eyebrow">07 · Let's connect</p>
+      <h2 id="contact-title">Follow along, or say hi</h2>
+      <p class="lede">
+        I share what I learn building Android apps at India scale. Hiring, collaborating or just curious? My inbox is open.
+      </p>
+      <FollowCards />
+      <div class="hero-meta">
+        {site.email && <a class="btn" href={`mailto:${site.email}`}>Email me</a>}
+        <a class="btn ghost" href={site.resumeUrl} rel="noopener">Resume</a>
+      </div>
+    </div>
+  </section>
+</Base>

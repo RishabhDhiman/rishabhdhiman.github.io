@@ -1,0 +1,26 @@
+---
+import { fmtDate, postPath, readingMinutes, type Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+const { posts } = Astro.props;
+---
+
+<ul class="post-list">
+  {
+    posts.map((p) => (
+      <li>
+        <a href={postPath(p)} class="post-row">
+          <span class="post-title">
+            {p.data.title}
+            {p.data.draft && <span class="draft-pill">Draft</span>}
+          </span>
+          <span class="post-meta">
+            <time datetime={p.data.date.toISOString()}>{fmtDate(p.data.date)}</time> · {readingMinutes(p.body)} min read
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

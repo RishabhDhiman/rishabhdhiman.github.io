@@ -1,0 +1,18 @@
+---
+import { brand } from '../data/site';
+---
+
+<ul class="follow">
+  {
+    brand.follow.map((f) => (
+      <li>
+        <a class="follow-card" href={f.url} rel="me noopener" target="_blank">
+          <span class="follow-label">{f.label}</span>
+          <span class="follow-handle">{f.handle}</span>
+          <span class="follow-blurb">{f.blurb}</span>
+          <span class="follow-cta" aria-hidden="true">Follow →</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
