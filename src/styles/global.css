@@ -937,3 +937,25 @@ p {
   height: 5rem;
   box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
 }
+
+.post-body figure {
+  margin: var(--space-4) 0;
+}
+
+.post-body figure img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.post-body figcaption {
+  margin-top: 0.6rem;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  text-align: center;
+}
+
+.post-body pre {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}

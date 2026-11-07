@@ -228,24 +228,29 @@ export const projects: Project[] = [
   {
     slug: 'multiwii-android-flight-controller',
     name: 'Android remote for a MultiWii drone',
-    summary: 'A side project that flies a MultiWii quadcopter from an Android phone over an NRF24L01 radio link instead of a hobby RC transmitter.',
+    summary: 'A side project that turns an Android phone into a remote for a MultiWii quadcopter, using an Arduino and an NRF24L01 radio instead of a hobby RC transmitter.',
     year: '2022',
     role: 'Side project',
-    stack: ['Android', 'C++', 'Arduino', 'NRF24L01'],
+    stack: ['Android', 'Kotlin', 'Arduino', 'C++', 'NRF24L01', 'MultiWii'],
     links: [
+      { label: 'Build write-up', url: '/writing/android-phone-drone-remote-multiwii-nrf24l01/' },
       {
         label: 'Source on GitHub',
         url: 'https://github.com/RishabhDhiman/MultiWii-NRF24L01-Android-Remote-Flight-Controller',
       },
     ],
     problem:
-      'Hobby RC transmitters are expensive and fixed-function. A phone already has a touchscreen, sensors and a CPU; it only lacked a radio link to the flight controller.',
+      'A hobby RC transmitter is two sticks, a few switches and a 2.4 GHz radio. A phone already has the touchscreen and a USB port; it only lacked the radio link to the flight controller.',
     approach: [
-      'Bridged the phone to an NRF24L01 transceiver so stick inputs travel as compact radio packets.',
-      'Mapped on-screen controls to the MultiWii throttle, yaw, pitch and roll channels.',
-      'Wrote the radio-side code in C++ for the Arduino hardware.',
+      'Built a Kotlin app with throttle and yaw sliders, a pitch/roll joystick and two AUX channels, all mapped to the standard 1000–2000 RC range.',
+      'Connected the phone over USB OTG to an Arduino ground station (CH34x serial at 115200 baud) that relays each frame through an NRF24L01 radio.',
+      'Adapted an NRF24 transmitter sketch so the Arduino reports the radio round-trip time, or a failure code, which the app shows as live link status.',
+      'Configured MultiWii 2.4.2’s NRF24 receiver on the drone with a one-second failsafe that cuts throttle when packets stop.',
     ],
-    outcome: ['Open-sourced on GitHub for other hobbyists to build on.'],
+    outcome: [
+      'A working phone-to-flight-controller link showing round trips of a couple of milliseconds in the app.',
+      'Open-sourced on GitHub, with the full build written up on this site.',
+    ],
   },
 ];
 
