@@ -81,7 +81,7 @@ export const brand = {
 
 // Told as a story, not a CV. Facts all come from the resume.
 export const about = [
-  'I studied computer applications at Kurukshetra University and took my first Android job in 2019 as an associate developer at Seasia Infotech. My first win there set the tone: moving screens to dynamic layouts cut the time to change the UI by 90%.',
+  'I’m from Yamunanagar in Haryana. I studied computer applications at Kurukshetra University and took my first Android job in 2019 as an associate developer at Seasia Infotech. My first win there set the tone: moving screens to dynamic layouts cut the time to change the UI by 90%.',
   'Since then I have built apps for Jio and Surfboard, spent two years at Paytm making its POS payments app faster, more secure and ready for metro cards, and was named a Paytm Rising Star in 2023.',
   `Today I'm an SDE-2 at Nykaa, working on the Nike India, Nykaa Fashion and Nykaa Beauty apps and the payments SDK they all share. I care about work that moves a number: cash burn, conversion, battery life, time to ship.`,
 ];
