@@ -2,7 +2,7 @@
 // Run `npm run og` after changing the name or job title.
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
-import { mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const out = (f) => fileURLToPath(new URL(`../public/${f}`, import.meta.url));
 const FONT = "Segoe UI, Inter, Helvetica, Arial, sans-serif";
@@ -31,11 +31,33 @@ const og = `
   </g>
 </svg>`;
 
-const icon = (size) => `
-<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="${size >= 180 ? 0 : 16}" fill="#141614"/>
-  <text x="32" y="42" text-anchor="middle" font-family="${FONT}" font-size="26" font-weight="700" fill="#f7f6f2">RD</text>
-</svg>`;
+// Home-screen icons need more pixels than the 320px avatar, so cut the same
+// face crop out of the 800px headshot (the avatar box from make-headshot.mjs,
+// expressed inside the square box: about 600px at left 102, top 20).
+const FACE = await sharp(out('rishabh-dhiman.jpg')).extract({ left: 102, top: 20, width: 600, height: 600 }).toBuffer();
+
+/** The face crop as a full square (iOS and Android round the corners themselves). */
+const square = (size) => sharp(FACE).resize(size, size).png({ palette: true, quality: 92, effort: 10, dither: 0.6 });
+
+/** Packs PNG buffers into a .ico file (PNG-in-ICO, supported by every current browser). */
+function ico(pngs) {
+  const header = Buffer.alloc(6 + 16 * pngs.length);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  let offset = header.length;
+  pngs.forEach(({ size, buf }, i) => {
+    const e = 6 + 16 * i;
+    header.writeUInt8(size >= 256 ? 0 : size, e);
+    header.writeUInt8(size >= 256 ? 0 : size, e + 1);
+    header.writeUInt16LE(1, e + 4);
+    header.writeUInt16LE(32, e + 6);
+    header.writeUInt32LE(buf.length, e + 8);
+    header.writeUInt32LE(offset, e + 12);
+    offset += buf.length;
+  });
+  return Buffer.concat([header, ...pngs.map((p) => p.buf)]);
+}
 
 // One share card per blog post, so a LinkedIn/WhatsApp share shows the post
 // title instead of the generic card. Rendered locally (not on the CI server,
@@ -92,8 +114,15 @@ await sharp(Buffer.from(og))
   .composite([{ input: await circle(330), left: 790, top: 110 }])
   .png({ compressionLevel: 9 })
   .toFile(out('og.png'));
-await sharp(Buffer.from(icon(180))).png().toFile(out('apple-touch-icon.png'));
-await sharp(Buffer.from(icon(192))).png().toFile(out('icon-192.png'));
-await sharp(Buffer.from(icon(512))).png().toFile(out('icon-512.png'));
-await sharp(Buffer.from(icon(32))).png().toFile(out('favicon-32.png'));
+// Icons use the headshot: round for browser tabs and search results,
+// square for home-screen icons.
+await square(180).png().toFile(out('apple-touch-icon.png'));
+await square(192).png().toFile(out('icon-192.png'));
+await square(512).png().toFile(out('icon-512.png'));
+writeFileSync(out('favicon-32.png'), await circle(32));
+writeFileSync(out('favicon-96.png'), await circle(96));
+writeFileSync(
+  out('favicon.ico'),
+  ico(await Promise.all([16, 32, 48].map(async (size) => ({ size, buf: await circle(size) })))),
+);
 console.log('Generated og.png and icons in public/');
