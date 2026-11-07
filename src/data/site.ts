@@ -63,7 +63,7 @@ export const site = {
 // headline, Instagram bio and talks so the brand is consistent everywhere.
 export const brand = {
   statement: 'I build the apps India shops and pays with.',
-  intro: `Senior Android Engineer at Nykaa. I was part of the team that built the Nike India app from scratch in four months, and before that spent two years on Paytm's POS payments app. Here I share what I learn shipping Android at India scale.`,
+  intro: `Senior Android Engineer at Nykaa, working on the Nykaa Fashion, Nykaa Beauty and Nike India apps. I was part of the team that built the Nike India app from scratch in four months, and before that spent two years on Paytm's POS payments app. Here I share what I learn shipping Android at India scale.`,
   builtFor: ['Nike', 'Nykaa', 'Paytm', 'Jio'],
   stats: [
     { value: `${yearsExperience}+ yrs`, label: 'shipping Android apps' },
